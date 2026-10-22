@@ -1,48 +1,26 @@
 # SwiftUI Studio
 
-A lightweight, native SwiftUI source editor for Intel Macs running macOS 12 Monterey or newer. Built with SwiftUI and AppKit; no Electron, Python runtime, or web editor.
+A native SwiftUI source editor for Intel Macs running macOS 12 Monterey or newer.
 
 ## Features
 
-- Native macOS window with a source editor and live preview side by side
-- Open and save `.swift` files
-- Preview canvas reacts to common SwiftUI source patterns such as `Text`, `Button`, and `Image(systemName:)`
-- Toggle preview visibility and adjust preview scale
-- Keyboard shortcuts for new and open documents
-- GitHub Actions builds an Intel `x86_64` app targeting macOS 12.0
-- Workflow artifacts include a `.zip` app bundle and a `.dmg` disk image
+- Native macOS source editor with open/save and keyboard shortcuts.
+- Compiler-backed Swift type checking using the Mac's installed Swift compiler.
+- Real compiled SwiftUI preview: compile a ContentView and launch it as a separate native app. Apple's SwiftUI framework renders the actual layout, state, animations, controls, and interactions.
+- Compiler diagnostics and build output panel.
+- Adjustable editor font, preview launch/stop controls, and dark editor styling.
+- GitHub Actions builds an Intel app bundle, ZIP, and DMG.
 
-## Important preview limitation
+## Real preview requirements
 
-The current preview is a lightweight visual approximation driven by common source patterns. It does **not** compile and execute arbitrary edited SwiftUI code inside the preview. The app bundle itself is compiled natively with Apple's Swift compiler. A future iteration can add an isolated preview-build process for actual compiled previews.
+The preview compiles your source locally using xcrun swiftc. Install Xcode or Apple's Command Line Tools first. The source file must define a SwiftUI type named ContentView conforming to View. Do not add a second @main app declaration. This version compiles one source file plus a generated host; it is not yet a complete Xcode replacement for multi-target projects, asset catalogs, Swift Package Manager dependencies, or arbitrary app lifecycle configuration.
 
-## Build locally
+The app and preview target x86_64-apple-macosx12.0 for Intel Macs on Monterey and later.
 
-On a Mac with Xcode Command Line Tools installed:
+## Downloads
 
-```bash
-mkdir -p "SwiftUI Studio.app/Contents/MacOS"
-swiftc -O -target x86_64-apple-macosx12.0 \
-  -framework SwiftUI -framework AppKit \
-  Sources/SwiftUIStudio/main.swift \
-  -o "SwiftUI Studio.app/Contents/MacOS/SwiftUIStudio"
-```
+Open [GitHub Actions](https://github.com/red5225/swiftui-studio/actions), select the latest successful Build SwiftUI Studio run, and download the SwiftUI-Studio-macOS-Intel artifact. A version tag such as v1.1.0 publishes the ZIP and DMG to GitHub Releases.
 
-Create `Contents/Info.plist` with the bundle metadata in `.github/workflows/build.yml`, or run the GitHub Actions workflow to receive a ready-made app bundle and DMG.
+## Known limits
 
-## GitHub Actions
-
-- **Actions → Build SwiftUI Studio → Run workflow** builds artifacts from `main`.
-- Download `SwiftUI-Studio-macOS-Intel.zip` or `SwiftUI-Studio-macOS-Intel.dmg` from the run's Artifacts section.
-- Push a version tag such as `v1.0.0` to publish both files as GitHub Release assets.
-
-The app is ad-hoc signed for testing and is not notarized. macOS may require Control-click → Open on first launch.
-
-## Compatibility
-
-- Intel Macs (`x86_64`)
-- macOS 12 Monterey and newer
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+This is an early IDE foundation, not Xcode feature parity. The editor does not yet bundle SourceKit-LSP, full syntax highlighting, code completion, multi-file project management, a debugger, package manager UI, or simulator/device deployment. Swift language support depends on the Swift toolchain installed on the Mac.
