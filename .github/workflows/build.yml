@@ -10,25 +10,22 @@ permissions:
   contents: write
 
 concurrency:
-  group: swiftui-studio-\${{ github.ref }}
+  group: swiftui-studio-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build-intel-macos:
-    # macos-13 is retired/unavailable on many hosted pools; use supported Intel image.
     runs-on: macos-15-intel
     timeout-minutes: 20
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-
       - name: Inspect build environment
         run: |
           sw_vers
           uname -m
           xcode-select -p
           swiftc --version
-
       - name: Build app bundle
         shell: bash
         run: |
@@ -57,7 +54,6 @@ jobs:
           codesign --force --deep --sign - "$APP"
           ditto -c -k --sequesterRsrc --keepParent "$APP" SwiftUI-Studio-macOS-Intel.zip
           hdiutil create -volname "SwiftUI Studio" -srcfolder "$APP" -ov -format UDZO SwiftUI-Studio-macOS-Intel.dmg
-
       - name: Upload downloadable app and DMG
         uses: actions/upload-artifact@v4
         with:
@@ -67,7 +63,6 @@ jobs:
             SwiftUI-Studio-macOS-Intel.dmg
           if-no-files-found: error
           retention-days: 30
-
       - name: Publish release assets for version tags
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
